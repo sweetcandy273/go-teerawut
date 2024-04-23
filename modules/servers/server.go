@@ -13,7 +13,7 @@ import (
 type Server struct {
 	App *fiber.App
 	Cfg *configs.Configs
-	Db  *gorm.DB
+	DB  *gorm.DB
 }
 
 // NewServer is a constructor
@@ -21,7 +21,7 @@ func NewServer(cfg *configs.Configs, db *gorm.DB) *Server {
 	return &Server{
 		App: fiber.New(),
 		Cfg: cfg,
-		Db:  db,
+		DB:  db,
 	}
 }
 

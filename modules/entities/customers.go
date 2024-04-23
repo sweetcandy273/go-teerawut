@@ -3,11 +3,14 @@ package entities
 // CustomersUsecase customers usecase
 type CustomersUsecase interface {
 	Create(req *CreateCustomerRequest) error
+	Update(req *UpdateCustomerRequest) error
 }
 
 // CustomersRepository customers repository
 type CustomersRepository interface {
-	Create(req *CreateCustomerRequest) error
+	Create(c *Customer) error
+	Update(c *Customer) error
+	GetByID(id uint) (*Customer, error)
 }
 
 // Customer customers register request
@@ -30,4 +33,10 @@ type CreateCustomerRequest struct {
 	TelephoneNumber string `json:"telephone_number"`
 	PhoneNumber     string `json:"phone_number"`
 	Detail          string `json:"detail"`
+}
+
+// UpdateCustomerRequest update customer request
+type UpdateCustomerRequest struct {
+	ID uint `json:"-" path:"id" form:"id" query:"id" validate:"required"`
+	CreateCustomerRequest
 }

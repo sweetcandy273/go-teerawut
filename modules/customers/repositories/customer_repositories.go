@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"github.com/jinzhu/copier"
 	"github.com/sirupsen/logrus"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
 	"gorm.io/gorm"
@@ -19,17 +18,33 @@ func NewCustomersRepository(db *gorm.DB) entities.CustomersRepository {
 }
 
 // Create create
-func (r *customersRepo) Create(req *entities.CreateCustomerRequest) error {
-	var userIDAdmin uint
-	userIDAdmin = 1
-	var customer entities.Customer
-	_ = copier.Copy(&customer, &req)
-	customer.Actor.CreatedByUserID = &userIDAdmin
-	customer.Actor.UpdatedByUserID = &userIDAdmin
-
-	err := r.DB.Create(&customer).Error
+func (r *customersRepo) Create(c *entities.Customer) error {
+	err := r.DB.Create(&c).Error
 	if err != nil {
 		logrus.Errorf("Create customer error: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+// GetByID get by id
+func (r *customersRepo) GetByID(id uint) (*entities.Customer, error) {
+	var customer entities.Customer
+	err := r.DB.Where("id = ?", id).First(&customer).Error
+	if err != nil {
+		logrus.Errorf("Get customer by id error: %v", err)
+		return nil, err
+	}
+
+	return &customer, nil
+}
+
+// Update update
+func (r *customersRepo) Update(c *entities.Customer) error {
+	err := r.DB.Save(&c).Error
+	if err != nil {
+		logrus.Errorf("Update customer error: %v", err)
 		return err
 	}
 
