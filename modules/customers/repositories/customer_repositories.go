@@ -3,6 +3,7 @@ package repositories
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
+
 	"gorm.io/gorm"
 )
 
@@ -49,4 +50,15 @@ func (r *customersRepo) Update(c *entities.Customer) error {
 	}
 
 	return nil
+}
+
+// GetAll get all
+func (r *customersRepo) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
+	var customers []*entities.Customer
+	err := r.DB.Find(&customers, req).Error
+	if err != nil {
+		logrus.Errorf("Get all customers error: %v", err)
+		return nil, err
+	}
+	return customers, nil
 }

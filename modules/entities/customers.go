@@ -4,6 +4,7 @@ package entities
 type CustomersUsecase interface {
 	Create(req *CreateCustomerRequest) error
 	Update(req *UpdateCustomerRequest) error
+	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 }
 
 // CustomersRepository customers repository
@@ -11,6 +12,7 @@ type CustomersRepository interface {
 	Create(c *Customer) error
 	Update(c *Customer) error
 	GetByID(id uint) (*Customer, error)
+	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 }
 
 // Customer customers register request
@@ -39,4 +41,15 @@ type CreateCustomerRequest struct {
 type UpdateCustomerRequest struct {
 	ID uint `json:"-" path:"id" form:"id" query:"id" validate:"required"`
 	CreateCustomerRequest
+}
+
+// GetAllCustomerRequest get all customer request
+type GetAllCustomerRequest struct {
+	ID              *uint   `json:"id" query:"id"`
+	Name            *string `json:"name" query:"name"`
+	Surname         *string `json:"surname" query:"surname"`
+	Nickname        *string `json:"nickname" query:"nickname"`
+	TelephoneNumber *string `json:"telephone_number" query:"telephone_number"`
+	PhoneNumber     *string `json:"phone_number" query:"phone_number"`
+	Query           *string `json:"query" query:"query"`
 }

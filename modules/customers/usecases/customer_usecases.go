@@ -80,3 +80,13 @@ func updateCustomer(req *entities.UpdateCustomerRequest, customer *entities.Cust
 	userIDAdmin = 1
 	customer.Actor.UpdatedByUserID = &userIDAdmin
 }
+
+// GetAll get all
+func (u *customersUse) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
+	customers, err := u.CustomersRepo.GetAll(req)
+	if err != nil {
+		logrus.Errorf("Get all customer error: %v", err)
+		return nil, err
+	}
+	return customers, nil
+}
