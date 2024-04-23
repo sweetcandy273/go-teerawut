@@ -55,10 +55,39 @@ func (r *customersRepo) Update(c *entities.Customer) error {
 // GetAll get all
 func (r *customersRepo) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
 	var customers []*entities.Customer
-	err := r.DB.Find(&customers, req).Error
+	err := query(r.DB, req).Find(&customers).Error
 	if err != nil {
-		logrus.Errorf("Get all customers error: %v", err)
+		logrus.Errorf("Query :: Get all customers error: %v", err)
 		return nil, err
 	}
 	return customers, nil
+}
+
+func query(db *gorm.DB, req *entities.GetAllCustomerRequest) *gorm.DB {
+	if req.ID != nil {
+		db = db.Where("id = ?", *req.ID)
+	}
+	if req.Name != nil {
+		db = db.Where("name = ?", *req.Name)
+	}
+	if req.Surname != nil {
+		db = db.Where("surname = ?", *req.Surname)
+	}
+	if req.Nickname != nil {
+		db = db.Where("nickname = ?", *req.Nickname)
+	}
+	if req.TelephoneNumber != nil {
+		db = db.Where("telephone_number = ?", *req.TelephoneNumber)
+	}
+	if req.PhoneNumber != nil {
+		db = db.Where("phone_number = ?", *req.PhoneNumber)
+	}
+	if req.Detail != nil {
+		db = db.Where("detail = ?", *req.Detail)
+	}
+	if req.Query != nil {
+		db = db.Where("name LIKE ? OR surname LIKE ? OR nickname LIKE ? OR telephone_number LIKE ? OR phone_number LIKE ? OR detail LIKE ?",
+			"%"+*req.Query+"%", "%"+*req.Query+"%", "%"+*req.Query+"%", "%"+*req.Query+"%", "%"+*req.Query+"%", "%"+*req.Query+"%")
+	}
+	return db
 }

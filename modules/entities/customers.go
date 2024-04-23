@@ -51,5 +51,6 @@ type GetAllCustomerRequest struct {
 	Nickname        *string `json:"nickname" query:"nickname"`
 	TelephoneNumber *string `json:"telephone_number" query:"telephone_number"`
 	PhoneNumber     *string `json:"phone_number" query:"phone_number"`
+	Detail          *string `json:"detail" query:"detail"`
 	Query           *string `json:"query" query:"query"`
 }

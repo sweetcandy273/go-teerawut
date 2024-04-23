@@ -22,10 +22,12 @@ func NewCustomersUsecase(customersRepo entities.CustomersRepository) entities.Cu
 func (u *customersUse) Create(req *entities.CreateCustomerRequest) error {
 	var userIDAdmin uint
 	userIDAdmin = 1
-	var customer *entities.Customer
-	_ = copier.Copy(&customer, &req)
-	customer.Actor.CreatedByUserID = &userIDAdmin
-	customer.Actor.UpdatedByUserID = &userIDAdmin
+	customer := &entities.Customer{}
+	_ = copier.CopyWithOption(&customer, req, copier.Option{IgnoreEmpty: true})
+	customer.Actor = entities.Actor{
+		CreatedByUserID: &userIDAdmin,
+		UpdatedByUserID: &userIDAdmin,
+	}
 	err := u.CustomersRepo.Create(customer)
 	if err != nil {
 		logrus.Errorf("Create customer error: %v", err)
