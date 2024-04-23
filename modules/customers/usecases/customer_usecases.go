@@ -20,6 +20,11 @@ func NewCustomersUsecase(customersRepo entities.CustomersRepository) entities.Cu
 
 // Create create
 func (u *customersUse) Create(req *entities.CreateCustomerRequest) error {
+	err := req.Validate()
+	if err != nil {
+		logrus.Errorf("Validate error: %v", err)
+		return err
+	}
 	var userIDAdmin uint
 	userIDAdmin = 1
 	customer := &entities.Customer{}
@@ -28,7 +33,7 @@ func (u *customersUse) Create(req *entities.CreateCustomerRequest) error {
 		CreatedByUserID: &userIDAdmin,
 		UpdatedByUserID: &userIDAdmin,
 	}
-	err := u.CustomersRepo.Create(customer)
+	err = u.CustomersRepo.Create(customer)
 	if err != nil {
 		logrus.Errorf("Create customer error: %v", err)
 		return err
@@ -38,6 +43,11 @@ func (u *customersUse) Create(req *entities.CreateCustomerRequest) error {
 
 // Update update
 func (u *customersUse) Update(req *entities.UpdateCustomerRequest) error {
+	err := req.Validate()
+	if err != nil {
+		logrus.Errorf("Validate error: %v", err)
+		return err
+	}
 	customer, err := u.CustomersRepo.GetByID(req.ID)
 	if err != nil {
 		logrus.Errorf("Get customer by id error: %v", err)

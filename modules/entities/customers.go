@@ -1,5 +1,10 @@
 package entities
 
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/sweetcandy273/go-teerawut/pkg/utils"
+)
+
 // CustomersUsecase customers usecase
 type CustomersUsecase interface {
 	Create(req *CreateCustomerRequest) error
@@ -37,6 +42,20 @@ type CreateCustomerRequest struct {
 	TelephoneNumber string `json:"telephone_number"`
 	PhoneNumber     string `json:"phone_number"`
 	Detail          string `json:"detail"`
+}
+
+// Validate validate
+func (req CreateCustomerRequest) Validate() error {
+	if req.TelephoneNumber == "" && req.PhoneNumber == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "telephone_number or phone_number is required")
+	}
+	if req.TelephoneNumber == "" && utils.IsValidTelephoneNumber(req.TelephoneNumber) {
+		return fiber.NewError(fiber.StatusBadRequest, "telephone_number is invalid")
+	}
+	if req.PhoneNumber == "" && utils.IsValidPhoneNumber(req.PhoneNumber) {
+		return fiber.NewError(fiber.StatusBadRequest, "phone_number is invalid")
+	}
+	return nil
 }
 
 // UpdateCustomerRequest update customer request
