@@ -92,3 +92,24 @@ func (u *customersUse) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.
 	}
 	return customers, nil
 }
+
+// Delete delete
+func (u *customersUse) Delete(req *entities.GetOne) error {
+	customer, err := u.CustomersRepo.GetByID(req.ID)
+	if err != nil {
+		logrus.Errorf("Get customer by id error: %v", err)
+		return err
+	}
+
+	if customer == nil {
+		logrus.Errorf("Customer not found")
+		return gorm.ErrRecordNotFound
+	}
+
+	err = u.CustomersRepo.Delete(customer.ID)
+	if err != nil {
+		logrus.Errorf("Delete customer error: %v", err)
+		return err
+	}
+	return nil
+}

@@ -5,6 +5,7 @@ type CustomersUsecase interface {
 	Create(req *CreateCustomerRequest) error
 	Update(req *UpdateCustomerRequest) error
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
+	Delete(req *GetOne) error
 }
 
 // CustomersRepository customers repository
@@ -13,6 +14,7 @@ type CustomersRepository interface {
 	Update(c *Customer) error
 	GetByID(id uint) (*Customer, error)
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
+	Delete(id uint) error
 }
 
 // Customer customers register request

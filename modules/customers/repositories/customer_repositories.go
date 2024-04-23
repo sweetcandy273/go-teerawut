@@ -91,3 +91,13 @@ func query(db *gorm.DB, req *entities.GetAllCustomerRequest) *gorm.DB {
 	}
 	return db
 }
+
+// Delete delete
+func (r *customersRepo) Delete(id uint) error {
+	err := r.DB.Where("id = ?", id).Delete(&entities.Customer{}).Error
+	if err != nil {
+		logrus.Errorf("Delete customer id %v error: %v", id, err)
+		return err
+	}
+	return nil
+}

@@ -20,3 +20,8 @@ type Model struct {
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
+
+// GetOne get one
+type GetOne struct {
+	ID uint `json:"-" path:"id" form:"id" query:"id" validate:"required"`
+}
