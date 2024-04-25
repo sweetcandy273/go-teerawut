@@ -32,7 +32,7 @@ func main() {
 	cfg.PostgreSQL.Database = os.Getenv("DB_DATABASE")
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "../query",
+		OutPath: "query",
 		Mode:    gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
 	})
 
@@ -41,14 +41,15 @@ func main() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	defer g.Execute()
 
 	g.UseDB(db)
 
 	g.ApplyBasic(entities.User{}, entities.Customer{})
+	// g.ApplyInterface(func(Queriers) {}, entities.Customer{})
 	// g.ApplyBasic(
 	// 	g.GenerateModel("users"),
 	// )
+	g.Execute()
 
 	s := servers.NewServer(cfg, db)
 	s.Start()

@@ -123,3 +123,13 @@ func (u *customersUse) Delete(req *entities.GetOne) error {
 	}
 	return nil
 }
+
+// GetByID get by id
+func (u *customersUse) GetByID(req *entities.GetOne) (*entities.Customer, error) {
+	customer, err := u.CustomersRepo.GetByID(req.ID)
+	if err != nil {
+		logrus.Errorf("Get customer by id %d error: %v", req, err)
+		return nil, err
+	}
+	return customer, nil
+}

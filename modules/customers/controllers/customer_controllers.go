@@ -18,6 +18,7 @@ func NewCustomersController(r fiber.Router, customerUse entities.CustomersUsecas
 	r.Patch("/:id", controllers.Update)
 	r.Get("/", controllers.GetAll)
 	r.Delete("/:id", controllers.Delete)
+	r.Get("/:id", controllers.GetByID)
 }
 
 // Create create
@@ -146,5 +147,35 @@ func (h *customersController) Delete(c *fiber.Ctx) error {
 		"status_code": fiber.StatusOK,
 		"message":     "",
 		"result":      nil,
+	})
+}
+
+// GetByID get by id
+func (h *customersController) GetByID(c *fiber.Ctx) error {
+	req := new(entities.GetOne)
+	if err := c.ParamsParser(req); err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
+			"status":      fiber.ErrBadRequest.Message,
+			"status_code": fiber.ErrBadRequest.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	customer, err := h.CustomersUse.GetByID(req)
+	if err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":      "OK",
+		"status_code": fiber.StatusOK,
+		"message":     "",
+		"result":      customer,
 	})
 }

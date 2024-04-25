@@ -11,6 +11,7 @@ type CustomersUsecase interface {
 	Update(req *UpdateCustomerRequest) error
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 	Delete(req *GetOne) error
+	GetByID(req *GetOne) (*Customer, error)
 }
 
 // CustomersRepository customers repository
