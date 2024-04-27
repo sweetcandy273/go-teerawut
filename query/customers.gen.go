@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"strings"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -195,6 +196,24 @@ type ICustomerDo interface {
 	Returning(value interface{}, columns ...string) ICustomerDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
+
+	FindByDetailAndTelephoneNumber(detail string, telephoneNumber string) (result entities.Customer, err error)
+}
+
+// SELECT * FROM @@table WHERE detail = @detail AND telephone_number = @telephoneNumber
+func (c customerDo) FindByDetailAndTelephoneNumber(detail string, telephoneNumber string) (result entities.Customer, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, detail)
+	params = append(params, telephoneNumber)
+	generateSQL.WriteString("SELECT * FROM customers WHERE detail = ? AND telephone_number = ? ")
+
+	var executeSQL *gorm.DB
+	executeSQL = c.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
 }
 
 func (c customerDo) Debug() ICustomerDo {

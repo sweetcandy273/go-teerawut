@@ -133,3 +133,13 @@ func (u *customersUse) GetByID(req *entities.GetOne) (*entities.Customer, error)
 	}
 	return customer, nil
 }
+
+// GetByDetailAndTelephoneNumber get by detail and telephone number
+func (u *customersUse) GetByDetailAndTelephoneNumber(req *entities.GetByDetailAndTelephoneNumberRequest) (any, error) {
+	customer, err := u.CustomersRepo.FindByDetailAndTelephoneNumber(req.Detail, req.TelephoneNumber)
+	if err != nil {
+		logrus.Errorf("Get customer by detail %s and telephone number %s error: %v", req.Detail, req.TelephoneNumber, err)
+		return nil, err
+	}
+	return customer, nil
+}

@@ -3,6 +3,7 @@ package entities
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sweetcandy273/go-teerawut/pkg/utils"
+	"gorm.io/gen"
 )
 
 // CustomersUsecase customers usecase
@@ -12,6 +13,7 @@ type CustomersUsecase interface {
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 	Delete(req *GetOne) error
 	GetByID(req *GetOne) (*Customer, error)
+	GetByDetailAndTelephoneNumber(req *GetByDetailAndTelephoneNumberRequest) (any, error)
 }
 
 // CustomersRepository customers repository
@@ -21,6 +23,7 @@ type CustomersRepository interface {
 	GetByID(id uint) (*Customer, error)
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 	Delete(id uint) error
+	FindByDetailAndTelephoneNumber(detail, telephoneNumber string) (gen.T, error)
 }
 
 // Customer customers register request
@@ -75,4 +78,10 @@ type GetAllCustomerRequest struct {
 	PhoneNumber     *string `json:"phone_number" query:"phone_number"`
 	Detail          *string `json:"detail" query:"detail"`
 	Query           *string `json:"query" query:"query"`
+}
+
+// GetByDetailAndTelephoneNumberRequest get by detail and telephone number request
+type GetByDetailAndTelephoneNumberRequest struct {
+	Detail          string `json:"detail" query:"detail" validate:"required"`
+	TelephoneNumber string `json:"telephone_number" query:"telephone_number" validate:"required"`
 }

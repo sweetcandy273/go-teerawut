@@ -5,6 +5,7 @@ import (
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
 	"github.com/sweetcandy273/go-teerawut/query"
 
+	"gorm.io/gen"
 	"gorm.io/gorm"
 )
 
@@ -102,4 +103,17 @@ func (r *customersRepo) Delete(id uint) error {
 		return err
 	}
 	return nil
+}
+
+// FindByDetailAndTelephoneNumber find by detail and telephone number
+func (r *customersRepo) FindByDetailAndTelephoneNumber(detail, telephoneNumber string) (gen.T, error) {
+	query.SetDefault(r.DB)
+	q := query.Customer
+	customer, err := q.FindByDetailAndTelephoneNumber(detail, telephoneNumber)
+	if err != nil {
+		logrus.Errorf("Get customer by detail %s and telephone number %s error: %v", detail, telephoneNumber, err)
+		return nil, err
+	}
+
+	return customer, nil
 }

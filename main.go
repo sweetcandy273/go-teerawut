@@ -7,8 +7,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sweetcandy273/go-teerawut/configs"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
+
 	"github.com/sweetcandy273/go-teerawut/modules/servers"
 	databases "github.com/sweetcandy273/go-teerawut/pkg/databases"
+	"github.com/sweetcandy273/go-teerawut/pkg/queriers"
 	"gorm.io/gen"
 )
 
@@ -45,7 +47,7 @@ func main() {
 	g.UseDB(db)
 
 	g.ApplyBasic(entities.User{}, entities.Customer{})
-	// g.ApplyInterface(func(Queriers) {}, entities.Customer{})
+	g.ApplyInterface(func(queriers.Querier) {}, entities.Customer{})
 	// g.ApplyBasic(
 	// 	g.GenerateModel("users"),
 	// )

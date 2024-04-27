@@ -18,6 +18,7 @@ func NewCustomersController(r fiber.Router, customerUse entities.CustomersUsecas
 	r.Patch("/:id", controllers.Update)
 	r.Get("/", controllers.GetAll)
 	r.Delete("/:id", controllers.Delete)
+	r.Get("/detail_and_telephone_number", controllers.GetByDetailAndTelephoneNumber)
 	r.Get("/:id", controllers.GetByID)
 }
 
@@ -163,6 +164,36 @@ func (h *customersController) GetByID(c *fiber.Ctx) error {
 	}
 
 	customer, err := h.CustomersUse.GetByID(req)
+	if err != nil {
+		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+			"status":      fiber.ErrInternalServerError.Message,
+			"status_code": fiber.ErrInternalServerError.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":      "OK",
+		"status_code": fiber.StatusOK,
+		"message":     "",
+		"result":      customer,
+	})
+}
+
+// GetByDetailAndTelephoneNumber get by detail and telephone number
+func (h *customersController) GetByDetailAndTelephoneNumber(c *fiber.Ctx) error {
+	req := new(entities.GetByDetailAndTelephoneNumberRequest)
+	if err := c.QueryParser(req); err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
+			"status":      fiber.ErrBadRequest.Message,
+			"status_code": fiber.ErrBadRequest.Code,
+			"message":     err.Error(),
+			"result":      nil,
+		})
+	}
+
+	customer, err := h.CustomersUse.GetByDetailAndTelephoneNumber(req)
 	if err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
 			"status":      fiber.ErrInternalServerError.Message,
