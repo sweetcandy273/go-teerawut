@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
+	handlers "github.com/sweetcandy273/go-teerawut/pkg/handlers/response.go"
 )
 
 type usersController struct {
@@ -19,30 +20,5 @@ func NewUsersController(r fiber.Router, usersUse entities.UsersUsecase) {
 
 // Register register
 func (h *usersController) Register(c *fiber.Ctx) error {
-	req := new(entities.CreateUserRequest)
-	if err := c.BodyParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	res, err := h.UsersUse.Register(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      res,
-	})
+	return handlers.ResponseObject(c, h.UsersUse.Register, &entities.CreateUserRequest{})
 }

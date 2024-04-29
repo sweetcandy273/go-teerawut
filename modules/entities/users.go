@@ -1,5 +1,10 @@
 package entities
 
+const (
+	// UserIDAdmin user id admin
+	UserIDAdmin uint = 1
+)
+
 // UsersUsecase users usecase
 type UsersUsecase interface {
 	Register(req *CreateUserRequest) (*UserResponse, error)

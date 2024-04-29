@@ -4,7 +4,6 @@ import "regexp"
 
 var (
 	regexEmail              = regexp.MustCompile(`^[\w-]+(\.[\w-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)*?\.[a-z]{2,6}|(\d{1,3}\.){3}\d{1,3})(:\d{4})?$`)
-	regexIDCard             = regexp.MustCompile(`^(\d{13})?$`)
 	regexPhoneNumber        = regexp.MustCompile(`0[6|8|9]{1}\d{8}$`)
 	regexTelephoneNumber    = regexp.MustCompile(`0[2|3|4|5|7]{1}\d{7}$`)
 	regexEnglishAlphabet    = regexp.MustCompile(`^[a-zA-Z]+$`)

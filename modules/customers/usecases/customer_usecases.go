@@ -25,8 +25,7 @@ func (u *customersUse) Create(req *entities.CreateCustomerRequest) error {
 		logrus.Errorf("Validate error: %v", err)
 		return err
 	}
-	var userIDAdmin uint
-	userIDAdmin = 1
+	userIDAdmin := entities.UserIDAdmin
 	customer := &entities.Customer{}
 	_ = copier.CopyWithOption(&customer, req, copier.Option{IgnoreEmpty: true})
 	customer.Actor = entities.Actor{
@@ -88,8 +87,7 @@ func updateCustomer(req *entities.UpdateCustomerRequest, customer *entities.Cust
 		customer.Detail = req.Detail
 	}
 
-	var userIDAdmin uint
-	userIDAdmin = 1
+	userIDAdmin := entities.UserIDAdmin
 	customer.Actor.UpdatedByUserID = &userIDAdmin
 }
 

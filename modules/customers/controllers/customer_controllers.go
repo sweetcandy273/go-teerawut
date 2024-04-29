@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
+	handlers "github.com/sweetcandy273/go-teerawut/pkg/handlers/response.go"
 )
 
 type customersController struct {
@@ -24,189 +25,30 @@ func NewCustomersController(r fiber.Router, customerUse entities.CustomersUsecas
 
 // Create create
 func (h *customersController) Create(c *fiber.Ctx) error {
-	req := new(entities.CreateCustomerRequest)
-	if err := c.BodyParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	err := h.CustomersUse.Create(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      nil,
-	})
+	return handlers.ResponseSuccess(c, h.CustomersUse.Create, &entities.CreateCustomerRequest{})
 }
 
 // Update update
 func (h *customersController) Update(c *fiber.Ctx) error {
-	req := new(entities.UpdateCustomerRequest)
-	if err := c.BodyParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	if err := c.ParamsParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	err := h.CustomersUse.Update(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      nil,
-	})
+	return handlers.ResponseSuccess(c, h.CustomersUse.Update, &entities.UpdateCustomerRequest{})
 }
 
 // GetAll get all
 func (h *customersController) GetAll(c *fiber.Ctx) error {
-	req := new(entities.GetAllCustomerRequest)
-	if err := c.QueryParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	customers, err := h.CustomersUse.GetAll(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      customers,
-	})
+	return handlers.ResponseObject(c, h.CustomersUse.GetAll, &entities.GetAllCustomerRequest{})
 }
 
 // Delete delete
 func (h *customersController) Delete(c *fiber.Ctx) error {
-	req := new(entities.GetOne)
-	if err := c.ParamsParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	err := h.CustomersUse.Delete(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      nil,
-	})
+	return handlers.ResponseSuccess(c, h.CustomersUse.Delete, &entities.GetOne{})
 }
 
 // GetByID get by id
 func (h *customersController) GetByID(c *fiber.Ctx) error {
-	req := new(entities.GetOne)
-	if err := c.ParamsParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	customer, err := h.CustomersUse.GetByID(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      customer,
-	})
+	return handlers.ResponseObject(c, h.CustomersUse.GetByID, &entities.GetOne{})
 }
 
 // GetByDetailAndTelephoneNumber get by detail and telephone number
 func (h *customersController) GetByDetailAndTelephoneNumber(c *fiber.Ctx) error {
-	req := new(entities.GetByDetailAndTelephoneNumberRequest)
-	if err := c.QueryParser(req); err != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"status":      fiber.ErrBadRequest.Message,
-			"status_code": fiber.ErrBadRequest.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	customer, err := h.CustomersUse.GetByDetailAndTelephoneNumber(req)
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"status":      fiber.ErrInternalServerError.Message,
-			"status_code": fiber.ErrInternalServerError.Code,
-			"message":     err.Error(),
-			"result":      nil,
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":      "OK",
-		"status_code": fiber.StatusOK,
-		"message":     "",
-		"result":      customer,
-	})
+	return handlers.ResponseObject(c, h.CustomersUse.GetByDetailAndTelephoneNumber, &entities.GetByDetailAndTelephoneNumberRequest{})
 }
