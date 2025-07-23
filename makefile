@@ -9,3 +9,16 @@ run: ## Run application on default port 8000 and print console format
 
 lint: ## Run golangci-lint
 	@golangci-lint run ./...
+
+# === CONFIGURATION ===
+MIGRATE_DIR=./db/migrations
+
+migrate-create:
+	@read -p "Migration name: " name; \
+	migrate create -ext sql -dir $(MIGRATE_DIR) $$name
+
+migrate-up:
+	@migrate -path db/migrations -database "$$DATABASE_URL" up
+
+migrate-down:
+	@migrate -path $(MIGRATE_DIR) -database "$(DB_URL)" down 1

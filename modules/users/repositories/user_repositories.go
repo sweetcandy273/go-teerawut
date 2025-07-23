@@ -27,7 +27,7 @@ func (r *usersRepo) Register(req *entities.CreateUserRequest) (*entities.UserRes
 	}
 
 	return &entities.UserResponse{
-		ID:       user.ID,
+		Model:    user.Model,
 		Username: user.Username,
 	}, nil
 }
