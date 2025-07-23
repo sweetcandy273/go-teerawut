@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// NewPostgreSQLDBConnection new postgreSQL database connection
-func NewPostgreSQLDBConnection(cfg *configs.Configs) (*gorm.DB, error) {
+// NewPostgresqlDBConnection new postgresql database connection
+func NewPostgresqlDBConnection(cfg *configs.Configs) (*gorm.DB, error) {
 	postgresUrl, err := utils.ConnectionUrlBuilder("postgresql", cfg)
 	if err != nil {
 		return nil, err

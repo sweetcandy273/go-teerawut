@@ -26,12 +26,7 @@ func main() {
 	cfg.App.Port = os.Getenv("FIBER_PORT")
 
 	// Database Configs
-	cfg.PostgreSQL.Host = os.Getenv("DB_HOST")
-	cfg.PostgreSQL.Port = os.Getenv("DB_PORT")
-	cfg.PostgreSQL.Protocol = os.Getenv("DB_PROTOCOL")
-	cfg.PostgreSQL.Username = os.Getenv("DB_USERNAME")
-	cfg.PostgreSQL.Password = os.Getenv("DB_PASSWORD")
-	cfg.PostgreSQL.Database = os.Getenv("DB_DATABASE")
+	cfg.PostgreSQL.URL = os.Getenv("DATABASE_URL")
 
 	g := gen.NewGenerator(gen.Config{
 		OutPath: "query",
@@ -39,7 +34,7 @@ func main() {
 	})
 
 	// New Database
-	db, err := databases.NewPostgreSQLDBConnection(cfg)
+	db, err := databases.NewPostgresqlDBConnection(cfg)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

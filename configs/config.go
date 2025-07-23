@@ -14,11 +14,5 @@ type Fiber struct {
 
 // PostgreSQL postgresql
 type PostgreSQL struct {
-	Host     string
-	Port     string
-	Protocol string
-	Username string
-	Password string
-	Database string
-	SSLMode  string
+	URL string
 }
