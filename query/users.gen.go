@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -27,9 +28,13 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 
 	tableName := _user.userDo.TableName()
 	_user.ALL = field.NewAsterisk(tableName)
-	_user.ID = field.NewUint64(tableName, "id")
+	_user.ID = field.NewUint(tableName, "id")
+	_user.CreatedAt = field.NewTime(tableName, "created_at")
+	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_user.DeletedAt = field.NewField(tableName, "deleted_at")
 	_user.Username = field.NewString(tableName, "username")
 	_user.Password = field.NewString(tableName, "password")
+	_user.DisplayName = field.NewString(tableName, "display_name")
 
 	_user.fillFieldMap()
 
@@ -39,10 +44,14 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 type user struct {
 	userDo
 
-	ALL      field.Asterisk
-	ID       field.Uint64
-	Username field.String
-	Password field.String
+	ALL         field.Asterisk
+	ID          field.Uint
+	CreatedAt   field.Time
+	UpdatedAt   field.Time
+	DeletedAt   field.Field
+	Username    field.String
+	Password    field.String
+	DisplayName field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -59,9 +68,13 @@ func (u user) As(alias string) *user {
 
 func (u *user) updateTableName(table string) *user {
 	u.ALL = field.NewAsterisk(table)
-	u.ID = field.NewUint64(table, "id")
+	u.ID = field.NewUint(table, "id")
+	u.CreatedAt = field.NewTime(table, "created_at")
+	u.UpdatedAt = field.NewTime(table, "updated_at")
+	u.DeletedAt = field.NewField(table, "deleted_at")
 	u.Username = field.NewString(table, "username")
 	u.Password = field.NewString(table, "password")
+	u.DisplayName = field.NewString(table, "display_name")
 
 	u.fillFieldMap()
 
@@ -78,10 +91,14 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 3)
+	u.fieldMap = make(map[string]field.Expr, 7)
 	u.fieldMap["id"] = u.ID
+	u.fieldMap["created_at"] = u.CreatedAt
+	u.fieldMap["updated_at"] = u.UpdatedAt
+	u.fieldMap["deleted_at"] = u.DeletedAt
 	u.fieldMap["username"] = u.Username
 	u.fieldMap["password"] = u.Password
+	u.fieldMap["display_name"] = u.DisplayName
 }
 
 func (u user) clone(db *gorm.DB) user {
@@ -151,6 +168,8 @@ type IUserDo interface {
 	FirstOrCreate() (*entities.User, error)
 	FindByPage(offset int, limit int) (result []*entities.User, count int64, err error)
 	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
+	Rows() (*sql.Rows, error)
+	Row() *sql.Row
 	Scan(result interface{}) (err error)
 	Returning(value interface{}, columns ...string) IUserDo
 	UnderlyingDB() *gorm.DB
