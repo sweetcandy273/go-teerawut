@@ -17,6 +17,17 @@ func (s *Server) MapHandlers() error {
 	// Group a version
 	v1 := s.App.Group("/v1")
 
+	//* Health check group
+	healthCheckGroup := v1.Group("/health-check")
+	healthCheckGroup.Get("/", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":      "OK",
+			"status_code": fiber.StatusOK,
+			"message":     "server is running",
+			"result":      nil,
+		})
+	})
+
 	//* Users group
 	usersGroup := v1.Group("/users")
 	usersRepository := _usersRepository.NewUsersRepository(s.DB)
