@@ -18,7 +18,7 @@ func NewUsersRepository(db *gorm.DB) entities.UsersRepository {
 }
 
 // Create create
-func (r *usersRepo) Create(req *entities.CreateUserRequest) (*entities.UserResponse, error) {
+func (r *usersRepo) Create(req *entities.CreateUserRequest) (*entities.User, error) {
 	user := entities.User{
 		Username: req.Username,
 		Password: req.Password,
@@ -28,10 +28,7 @@ func (r *usersRepo) Create(req *entities.CreateUserRequest) (*entities.UserRespo
 		return nil, err
 	}
 
-	return &entities.UserResponse{
-		Model:    user.Model,
-		Username: user.Username,
-	}, nil
+	return &user, nil
 }
 
 // FindByUsername find user by username

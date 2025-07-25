@@ -16,9 +16,15 @@ func NewUsersController(r fiber.Router, usersUse entities.UsersUsecase) {
 		UsersUse: usersUse,
 	}
 	r.Post("/", controllers.Register)
+	r.Post("/login", controllers.Login)
 }
 
 // Register register
 func (h *usersController) Register(c *fiber.Ctx) error {
 	return handlers.ResponseObject(c, h.UsersUse.Register, &entities.CreateUserRequest{})
+}
+
+// Login login
+func (h *usersController) Login(c *fiber.Ctx) error {
+	return handlers.ResponseObject(c, h.UsersUse.Login, &entities.LoginRequest{})
 }

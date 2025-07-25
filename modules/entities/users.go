@@ -7,12 +7,13 @@ const (
 
 // UsersUsecase users usecase
 type UsersUsecase interface {
-	Register(req *CreateUserRequest) (*UserResponse, error)
+	Register(req *CreateUserRequest) (*User, error)
+	Login(req *LoginRequest) (*User, error)
 }
 
 // UsersRepository users repository
 type UsersRepository interface {
-	Create(req *CreateUserRequest) (*UserResponse, error)
+	Create(req *CreateUserRequest) (*User, error)
 	FindByUsername(username string) (*User, error)
 }
 
@@ -20,7 +21,7 @@ type UsersRepository interface {
 type User struct {
 	Model
 	Username    string `json:"username"`
-	Password    string `json:"password"`
+	Password    string `json:"-"`
 	DisplayName string `json:"display_name"`
 }
 

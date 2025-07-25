@@ -4,6 +4,7 @@ import (
 	_usersHttp "github.com/sweetcandy273/go-teerawut/modules/users/controllers"
 	_usersRepository "github.com/sweetcandy273/go-teerawut/modules/users/repositories"
 	_usersUsecase "github.com/sweetcandy273/go-teerawut/modules/users/usecases"
+	"github.com/sweetcandy273/go-teerawut/pkg/handlers/middlewares"
 
 	_customersHttp "github.com/sweetcandy273/go-teerawut/modules/customers/controllers"
 	_customersRepository "github.com/sweetcandy273/go-teerawut/modules/customers/repositories"
@@ -14,6 +15,10 @@ import (
 
 // MapHandlers map handlers
 func (s *Server) MapHandlers() error {
+	s.App.Use(
+		middlewares.WrapError(), // Wrap error middleware
+	)
+
 	// Group a version
 	v1 := s.App.Group("/v1")
 
