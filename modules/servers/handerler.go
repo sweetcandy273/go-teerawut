@@ -1,7 +1,10 @@
 package servers
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	jwtware "github.com/gofiber/jwt/v3"
 	_usersHttp "github.com/sweetcandy273/go-teerawut/modules/users/controllers"
 	_usersRepository "github.com/sweetcandy273/go-teerawut/modules/users/repositories"
 	_usersUsecase "github.com/sweetcandy273/go-teerawut/modules/users/usecases"
@@ -21,11 +24,21 @@ func (s *Server) MapHandlers() error {
 		cors.New(
 			cors.Config{
 				AllowOrigins: "*", // Allow all origins
-				AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+				AllowMethods: "GET, POST, PUT, DELETE, OPTIONS, PATCH",
 				AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 			},
 		),
 	)
+
+	authJWT := jwtware.New(jwtware.Config{
+		SigningKey: []byte(os.Getenv("JWT_SECRET")),
+		ContextKey: "user", // จะเก็บ token ใน c.Locals("user")
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"message": "Unauthorized",
+			})
+		},
+	})
 
 	// Group a version
 	v1 := s.App.Group("/v1")
@@ -48,7 +61,7 @@ func (s *Server) MapHandlers() error {
 	_usersHttp.NewUsersController(usersGroup, usersUsecase)
 
 	//* Customers group
-	customersGroup := v1.Group("/customers")
+	customersGroup := v1.Group("/customers", authJWT)
 	customersRepository := _customersRepository.NewCustomersRepository(s.DB)
 	customersUsecase := _customersUsecase.NewCustomersUsecase(customersRepository)
 	_customersHttp.NewCustomersController(customersGroup, customersUsecase)

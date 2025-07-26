@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 )
 
 const (
@@ -16,6 +17,8 @@ const (
 	compositeFormDepth = 5
 	pathKey            = "path"
 	queryKey           = "query"
+	// UserKey user key
+	UserKey = "user"
 )
 
 // Context context
@@ -122,4 +125,29 @@ func (c *Context) Validate(i interface{}) error {
 	}
 
 	return nil
+}
+
+// Claims jwt claims
+type Claims struct {
+	jwt.StandardClaims
+	Permissions interface{} `json:"permissions"`
+}
+
+// GetClaims get user claims
+func (c *Context) GetClaims() *Claims {
+	user := c.Locals(UserKey).(*jwt.Token)
+	return user.Claims.(*Claims)
+}
+
+// GetUserID get user ID from context
+func (c *Context) GetUserID() string {
+	token, ok := c.Locals(UserKey).(*jwt.Token)
+	if ok {
+		cl := token.Claims.(*Claims)
+		if cl != nil {
+			return c.GetClaims().Subject
+		}
+	}
+
+	return ""
 }

@@ -29,33 +29,25 @@ type CustomersRepository interface {
 // Customer customers register request
 type Customer struct {
 	Model
-	Name            string `json:"name"`
-	Surname         string `json:"surname"`
-	Nickname        string `json:"nickname"`
-	TelephoneNumber string `json:"telephone_number"`
-	PhoneNumber     string `json:"phone_number"`
-	Detail          string `json:"detail"`
+	Fname       string `json:"fname"`
+	Lname       string `json:"lname"`
+	Nickname    string `json:"nickname"`
+	PhoneNumber string `json:"phone_number"`
+	Detail      string `json:"detail"`
 	Actor
 }
 
 // CreateCustomerRequest create customer request
 type CreateCustomerRequest struct {
-	Name            string `json:"name"`
-	Surname         string `json:"surname"`
-	Nickname        string `json:"nickname"`
-	TelephoneNumber string `json:"telephone_number"`
-	PhoneNumber     string `json:"phone_number"`
-	Detail          string `json:"detail"`
+	Fname       string `json:"fname"`
+	Lname       string `json:"lname"`
+	Nickname    string `json:"nickname"`
+	PhoneNumber string `json:"phone_number"`
+	Detail      string `json:"detail"`
 }
 
 // Validate validate
 func (req CreateCustomerRequest) Validate() error {
-	if req.TelephoneNumber == "" && req.PhoneNumber == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "telephone_number or phone_number is required")
-	}
-	if req.TelephoneNumber == "" && utils.IsValidTelephoneNumber(req.TelephoneNumber) {
-		return fiber.NewError(fiber.StatusBadRequest, "telephone_number is invalid")
-	}
 	if req.PhoneNumber == "" && utils.IsValidPhoneNumber(req.PhoneNumber) {
 		return fiber.NewError(fiber.StatusBadRequest, "phone_number is invalid")
 	}

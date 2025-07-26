@@ -33,10 +33,9 @@ func newCustomer(db *gorm.DB, opts ...gen.DOOption) customer {
 	_customer.CreatedAt = field.NewTime(tableName, "created_at")
 	_customer.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_customer.DeletedAt = field.NewField(tableName, "deleted_at")
-	_customer.Name = field.NewString(tableName, "name")
-	_customer.Surname = field.NewString(tableName, "surname")
+	_customer.Fname = field.NewString(tableName, "fname")
+	_customer.Lname = field.NewString(tableName, "lname")
 	_customer.Nickname = field.NewString(tableName, "nickname")
-	_customer.TelephoneNumber = field.NewString(tableName, "telephone_number")
 	_customer.PhoneNumber = field.NewString(tableName, "phone_number")
 	_customer.Detail = field.NewString(tableName, "detail")
 	_customer.CreatedByUserID = field.NewUint(tableName, "created_by_user_id")
@@ -56,10 +55,9 @@ type customer struct {
 	CreatedAt       field.Time
 	UpdatedAt       field.Time
 	DeletedAt       field.Field
-	Name            field.String
-	Surname         field.String
+	Fname           field.String
+	Lname           field.String
 	Nickname        field.String
-	TelephoneNumber field.String
 	PhoneNumber     field.String
 	Detail          field.String
 	CreatedByUserID field.Uint
@@ -85,10 +83,9 @@ func (c *customer) updateTableName(table string) *customer {
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.DeletedAt = field.NewField(table, "deleted_at")
-	c.Name = field.NewString(table, "name")
-	c.Surname = field.NewString(table, "surname")
+	c.Fname = field.NewString(table, "fname")
+	c.Lname = field.NewString(table, "lname")
 	c.Nickname = field.NewString(table, "nickname")
-	c.TelephoneNumber = field.NewString(table, "telephone_number")
 	c.PhoneNumber = field.NewString(table, "phone_number")
 	c.Detail = field.NewString(table, "detail")
 	c.CreatedByUserID = field.NewUint(table, "created_by_user_id")
@@ -110,15 +107,14 @@ func (c *customer) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *customer) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 13)
+	c.fieldMap = make(map[string]field.Expr, 12)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["deleted_at"] = c.DeletedAt
-	c.fieldMap["name"] = c.Name
-	c.fieldMap["surname"] = c.Surname
+	c.fieldMap["fname"] = c.Fname
+	c.fieldMap["lname"] = c.Lname
 	c.fieldMap["nickname"] = c.Nickname
-	c.fieldMap["telephone_number"] = c.TelephoneNumber
 	c.fieldMap["phone_number"] = c.PhoneNumber
 	c.fieldMap["detail"] = c.Detail
 	c.fieldMap["created_by_user_id"] = c.CreatedByUserID

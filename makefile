@@ -18,7 +18,10 @@ migrate-create:
 	migrate create -ext sql -dir $(MIGRATE_DIR) $$name
 
 migrate-up:
-	@migrate -path db/migrations -database "$$DATABASE_URL" up
+	@migrate -path $(MIGRATE_DIR) -database "$$DATABASE_URL" up
 
 migrate-down:
-	@migrate -path $(MIGRATE_DIR) -database "$(DB_URL)" down 1
+	@migrate -path $(MIGRATE_DIR) -database "$$DATABASE_URL" down 1
+
+migrate-status:
+	migrate -path $(MIGRATE_DIR) -database "$$DATABASE_URL" version

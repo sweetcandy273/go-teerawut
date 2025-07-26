@@ -19,7 +19,7 @@ type UsersRepository interface {
 
 // User users register request
 type User struct {
-	Model
+	ID          uint   `json:"id"`
 	Username    string `json:"username"`
 	Password    string `json:"-"`
 	DisplayName string `json:"display_name"`
