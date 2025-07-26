@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	_usersHttp "github.com/sweetcandy273/go-teerawut/modules/users/controllers"
 	_usersRepository "github.com/sweetcandy273/go-teerawut/modules/users/repositories"
 	_usersUsecase "github.com/sweetcandy273/go-teerawut/modules/users/usecases"
@@ -17,6 +18,13 @@ import (
 func (s *Server) MapHandlers() error {
 	s.App.Use(
 		middlewares.WrapError(), // Wrap error middleware
+		cors.New(
+			cors.Config{
+				AllowOrigins: "*", // Allow all origins
+				AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+				AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+			},
+		),
 	)
 
 	// Group a version
