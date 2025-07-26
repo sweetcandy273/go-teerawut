@@ -3,7 +3,9 @@ package usecases
 import (
 	"errors"
 	"fmt"
+	"os"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -48,7 +50,7 @@ func (u *usersUse) Register(req *entities.CreateUserRequest) (*entities.User, er
 }
 
 // Login login
-func (u *usersUse) Login(req *entities.LoginRequest) (*entities.User, error) {
+func (u *usersUse) Login(req *entities.LoginRequest) (*entities.Token, error) {
 	// Find user by username
 	user, err := u.UsersRepo.FindByUsername(req.Username)
 	if err != nil {
@@ -65,5 +67,21 @@ func (u *usersUse) Login(req *entities.LoginRequest) (*entities.User, error) {
 		return nil, fmt.Errorf("Invalid password.")
 	}
 
-	return user, nil
+	// สร้าง JWT Token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":       user.ID,
+		"username": user.Username,
+		// "exp": time.Now().Add(time.Hour * 1).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, fmt.Errorf("Failed to create token: %s", err.Error())
+	}
+
+	return &entities.Token{
+		AccessToken: tokenString,
+		UserName:    user.Username,
+	}, nil
 }

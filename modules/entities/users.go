@@ -8,7 +8,7 @@ const (
 // UsersUsecase users usecase
 type UsersUsecase interface {
 	Register(req *CreateUserRequest) (*User, error)
-	Login(req *LoginRequest) (*User, error)
+	Login(req *LoginRequest) (*Token, error)
 }
 
 // UsersRepository users repository
@@ -29,13 +29,6 @@ type User struct {
 type CreateUserRequest struct {
 	Username    string `json:"username"`
 	Password    string `json:"password"`
-	DisplayName string `json:"display_name"`
-}
-
-// UserResponse users register response
-type UserResponse struct {
-	Model
-	Username    string `json:"username"`
 	DisplayName string `json:"display_name"`
 }
 
