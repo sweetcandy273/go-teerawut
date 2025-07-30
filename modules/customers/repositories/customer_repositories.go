@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gen"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type customersRepo struct {
@@ -35,7 +36,7 @@ func (r *customersRepo) Create(c *entities.Customer) error {
 func (r *customersRepo) GetByID(id uint) (*entities.Customer, error) {
 	query.SetDefault(r.DB)
 	q := query.Customer
-	customer, err := q.Where(q.ID.Eq(id)).First()
+	customer, err := q.Where(q.ID.Eq(id)).Preload(q.Addresses).First()
 	if err != nil {
 		logrus.Errorf("Get customer by id %d error: %v", id, err)
 		return nil, err
@@ -58,7 +59,7 @@ func (r *customersRepo) Update(c *entities.Customer) error {
 // GetAll get all
 func (r *customersRepo) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
 	var customers []*entities.Customer
-	err := queryCustomer(r.DB, req).Find(&customers).Error
+	err := queryCustomer(r.DB, req).Preload("Addresses").Find(&customers).Error
 	if err != nil {
 		logrus.Errorf("Query :: Get all customers error: %v", err)
 		return nil, err
@@ -111,4 +112,43 @@ func (r *customersRepo) FindByDetailAndTelephoneNumber(detail, telephoneNumber s
 	}
 
 	return customer, nil
+}
+
+// CreateAddress create address
+func (r *customersRepo) CreateAddress(addresses []*entities.CustomerAddress) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAddress
+	err := q.CreateInBatches(addresses, 100)
+	if err != nil {
+		logrus.Errorf("Create customer address error: %v", err)
+		return err
+	}
+	return nil
+}
+
+// UpdateAddress update address
+func (r *customersRepo) UpdateAddress(addresses []*entities.CustomerAddress) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAddress
+	err := q.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"address", "village", "detail"}),
+	}).CreateInBatches(addresses, 100)
+	if err != nil {
+		logrus.Errorf("Update customer address error: %v", err)
+		return err
+	}
+	return nil
+}
+
+// DeleteAddress delete address
+func (r *customersRepo) DeleteAddress(ids []uint) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAddress
+	_, err := q.Where(q.ID.In(ids...)).Delete()
+	if err != nil {
+		logrus.Errorf("Delete customer address error: %v", err)
+		return err
+	}
+	return nil
 }

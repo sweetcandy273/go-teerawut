@@ -8,7 +8,7 @@ import (
 
 // Actor actor
 type Actor struct {
-	CreatedByUserID *uint `json:"create_by_user_id" db:"create_by_user_id"`
+	CreatedByUserID uint  `json:"create_by_user_id" db:"create_by_user_id"`
 	UpdatedByUserID *uint `json:"update_by_user_id" db:"update_by_user_id"`
 	DeletedByUserID *uint `json:"delete_by_user_id" db:"delete_by_user_id"`
 }

@@ -16,39 +16,44 @@ import (
 )
 
 var (
-	Q        = new(Query)
-	Customer *customer
-	User     *user
+	Q               = new(Query)
+	Customer        *customer
+	CustomerAddress *customerAddress
+	User            *user
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	Customer = &Q.Customer
+	CustomerAddress = &Q.CustomerAddress
 	User = &Q.User
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:       db,
-		Customer: newCustomer(db, opts...),
-		User:     newUser(db, opts...),
+		db:              db,
+		Customer:        newCustomer(db, opts...),
+		CustomerAddress: newCustomerAddress(db, opts...),
+		User:            newUser(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Customer customer
-	User     user
+	Customer        customer
+	CustomerAddress customerAddress
+	User            user
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:       db,
-		Customer: q.Customer.clone(db),
-		User:     q.User.clone(db),
+		db:              db,
+		Customer:        q.Customer.clone(db),
+		CustomerAddress: q.CustomerAddress.clone(db),
+		User:            q.User.clone(db),
 	}
 }
 
@@ -62,21 +67,24 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:       db,
-		Customer: q.Customer.replaceDB(db),
-		User:     q.User.replaceDB(db),
+		db:              db,
+		Customer:        q.Customer.replaceDB(db),
+		CustomerAddress: q.CustomerAddress.replaceDB(db),
+		User:            q.User.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Customer ICustomerDo
-	User     IUserDo
+	Customer        ICustomerDo
+	CustomerAddress ICustomerAddressDo
+	User            IUserDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Customer: q.Customer.WithContext(ctx),
-		User:     q.User.WithContext(ctx),
+		Customer:        q.Customer.WithContext(ctx),
+		CustomerAddress: q.CustomerAddress.WithContext(ctx),
+		User:            q.User.WithContext(ctx),
 	}
 }
 

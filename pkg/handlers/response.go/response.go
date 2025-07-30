@@ -50,6 +50,7 @@ func ResponseSuccess(c *fiber.Ctx, fn interface{}, request interface{}) error {
 	}
 
 	out := reflect.ValueOf(fn).Call([]reflect.Value{
+		reflect.ValueOf(ctx),
 		reflect.ValueOf(request),
 	})
 	errObj := out[0].Interface()

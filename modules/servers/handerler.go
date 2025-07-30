@@ -8,6 +8,7 @@ import (
 	_usersHttp "github.com/sweetcandy273/go-teerawut/modules/users/controllers"
 	_usersRepository "github.com/sweetcandy273/go-teerawut/modules/users/repositories"
 	_usersUsecase "github.com/sweetcandy273/go-teerawut/modules/users/usecases"
+	"github.com/sweetcandy273/go-teerawut/pkg/handlers/context"
 	"github.com/sweetcandy273/go-teerawut/pkg/handlers/middlewares"
 
 	_customersHttp "github.com/sweetcandy273/go-teerawut/modules/customers/controllers"
@@ -31,8 +32,8 @@ func (s *Server) MapHandlers() error {
 	)
 
 	authJWT := jwtware.New(jwtware.Config{
-		SigningKey: []byte(os.Getenv("JWT_SECRET")),
-		ContextKey: "user", // จะเก็บ token ใน c.Locals("user")
+		SigningKey: []byte(os.Getenv("JWT_SECRET")), // Secret key for signing JWT
+		ContextKey: context.UserKey,                 // จะเก็บ token ใน c.Locals("user")
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Unauthorized",

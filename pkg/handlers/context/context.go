@@ -1,6 +1,7 @@
 package context
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -8,7 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 const (
@@ -140,14 +141,21 @@ func (c *Context) GetClaims() *Claims {
 }
 
 // GetUserID get user ID from context
-func (c *Context) GetUserID() string {
+func (c *Context) GetUserID() uint {
+	fmt.Printf("Locals: %#v\n", c.Locals(UserKey))
 	token, ok := c.Locals(UserKey).(*jwt.Token)
-	if ok {
-		cl := token.Claims.(*Claims)
-		if cl != nil {
-			return c.GetClaims().Subject
-		}
+	if !ok || token == nil {
+		return 0
 	}
 
-	return ""
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0
+	}
+
+	if id, ok := claims["id"].(float64); ok {
+		return uint(id)
+	}
+
+	return 0
 }

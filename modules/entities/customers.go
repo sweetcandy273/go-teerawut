@@ -2,16 +2,17 @@ package entities
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/sweetcandy273/go-teerawut/pkg/handlers/context"
 	"github.com/sweetcandy273/go-teerawut/pkg/utils"
 	"gorm.io/gen"
 )
 
 // CustomersUsecase customers usecase
 type CustomersUsecase interface {
-	Create(req *CreateCustomerRequest) error
-	Update(req *UpdateCustomerRequest) error
+	Create(c *context.Context, req *CreateCustomerRequest) error
+	Update(c *context.Context, req *UpdateCustomerRequest) error
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
-	Delete(req *GetOne) error
+	Delete(c *context.Context, req *GetOne) error
 	GetByID(req *GetOne) (*Customer, error)
 	GetByDetailAndTelephoneNumber(req *GetByDetailAndTelephoneNumberRequest) (any, error)
 }
@@ -24,22 +25,34 @@ type CustomersRepository interface {
 	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
 	Delete(id uint) error
 	FindByDetailAndTelephoneNumber(detail, telephoneNumber string) (gen.T, error)
+	CreateAddress(addresses []*CustomerAddress) error
+	UpdateAddress(addresses []*CustomerAddress) error
+	DeleteAddress(ids []uint) error
 }
 
 // Customer customers register request
 type Customer struct {
 	Model
-	Name        string `json:"name"`
-	PhoneNumber string `json:"phone_number"`
-	Detail      string `json:"detail"`
+	Name        string             `json:"name"`
+	PhoneNumber string             `json:"phone_number"`
+	Detail      string             `json:"detail"`
+	Addresses   []*CustomerAddress `json:"addresses" gorm:"foreignKey:CustomerID;references:ID"`
 	Actor
 }
 
 // CreateCustomerRequest create customer request
 type CreateCustomerRequest struct {
-	Name        string `json:"name"`
-	PhoneNumber string `json:"phone_number"`
-	Detail      string `json:"detail"`
+	Name        string    `json:"name"`
+	PhoneNumber string    `json:"phone_number"`
+	Detail      string    `json:"detail"`
+	Addresses   []address `json:"addresses"`
+}
+
+type address struct {
+	ID      uint   `json:"id"`
+	Address string `json:"address"`
+	Village string `json:"village"`
+	Detail  string `json:"detail"`
 }
 
 // Validate validate

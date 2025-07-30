@@ -33,14 +33,17 @@ func newCustomer(db *gorm.DB, opts ...gen.DOOption) customer {
 	_customer.CreatedAt = field.NewTime(tableName, "created_at")
 	_customer.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_customer.DeletedAt = field.NewField(tableName, "deleted_at")
-	_customer.Fname = field.NewString(tableName, "fname")
-	_customer.Lname = field.NewString(tableName, "lname")
-	_customer.Nickname = field.NewString(tableName, "nickname")
+	_customer.Name = field.NewString(tableName, "name")
 	_customer.PhoneNumber = field.NewString(tableName, "phone_number")
 	_customer.Detail = field.NewString(tableName, "detail")
 	_customer.CreatedByUserID = field.NewUint(tableName, "created_by_user_id")
 	_customer.UpdatedByUserID = field.NewUint(tableName, "updated_by_user_id")
 	_customer.DeletedByUserID = field.NewUint(tableName, "deleted_by_user_id")
+	_customer.Addresses = customerHasManyAddresses{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Addresses", "entities.CustomerAddress"),
+	}
 
 	_customer.fillFieldMap()
 
@@ -55,14 +58,13 @@ type customer struct {
 	CreatedAt       field.Time
 	UpdatedAt       field.Time
 	DeletedAt       field.Field
-	Fname           field.String
-	Lname           field.String
-	Nickname        field.String
+	Name            field.String
 	PhoneNumber     field.String
 	Detail          field.String
 	CreatedByUserID field.Uint
 	UpdatedByUserID field.Uint
 	DeletedByUserID field.Uint
+	Addresses       customerHasManyAddresses
 
 	fieldMap map[string]field.Expr
 }
@@ -83,9 +85,7 @@ func (c *customer) updateTableName(table string) *customer {
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.DeletedAt = field.NewField(table, "deleted_at")
-	c.Fname = field.NewString(table, "fname")
-	c.Lname = field.NewString(table, "lname")
-	c.Nickname = field.NewString(table, "nickname")
+	c.Name = field.NewString(table, "name")
 	c.PhoneNumber = field.NewString(table, "phone_number")
 	c.Detail = field.NewString(table, "detail")
 	c.CreatedByUserID = field.NewUint(table, "created_by_user_id")
@@ -107,29 +107,112 @@ func (c *customer) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *customer) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 12)
+	c.fieldMap = make(map[string]field.Expr, 11)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["deleted_at"] = c.DeletedAt
-	c.fieldMap["fname"] = c.Fname
-	c.fieldMap["lname"] = c.Lname
-	c.fieldMap["nickname"] = c.Nickname
+	c.fieldMap["name"] = c.Name
 	c.fieldMap["phone_number"] = c.PhoneNumber
 	c.fieldMap["detail"] = c.Detail
 	c.fieldMap["created_by_user_id"] = c.CreatedByUserID
 	c.fieldMap["updated_by_user_id"] = c.UpdatedByUserID
 	c.fieldMap["deleted_by_user_id"] = c.DeletedByUserID
+
 }
 
 func (c customer) clone(db *gorm.DB) customer {
 	c.customerDo.ReplaceConnPool(db.Statement.ConnPool)
+	c.Addresses.db = db.Session(&gorm.Session{Initialized: true})
+	c.Addresses.db.Statement.ConnPool = db.Statement.ConnPool
 	return c
 }
 
 func (c customer) replaceDB(db *gorm.DB) customer {
 	c.customerDo.ReplaceDB(db)
+	c.Addresses.db = db.Session(&gorm.Session{})
 	return c
+}
+
+type customerHasManyAddresses struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a customerHasManyAddresses) Where(conds ...field.Expr) *customerHasManyAddresses {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a customerHasManyAddresses) WithContext(ctx context.Context) *customerHasManyAddresses {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a customerHasManyAddresses) Session(session *gorm.Session) *customerHasManyAddresses {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a customerHasManyAddresses) Model(m *entities.Customer) *customerHasManyAddressesTx {
+	return &customerHasManyAddressesTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a customerHasManyAddresses) Unscoped() *customerHasManyAddresses {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type customerHasManyAddressesTx struct{ tx *gorm.Association }
+
+func (a customerHasManyAddressesTx) Find() (result []*entities.CustomerAddress, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a customerHasManyAddressesTx) Append(values ...*entities.CustomerAddress) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a customerHasManyAddressesTx) Replace(values ...*entities.CustomerAddress) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a customerHasManyAddressesTx) Delete(values ...*entities.CustomerAddress) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a customerHasManyAddressesTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a customerHasManyAddressesTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a customerHasManyAddressesTx) Unscoped() *customerHasManyAddressesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type customerDo struct{ gen.DO }

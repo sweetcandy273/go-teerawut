@@ -41,7 +41,7 @@ func main() {
 
 	g.UseDB(db)
 
-	g.ApplyBasic(entities.User{}, entities.Customer{})
+	g.ApplyBasic(entities.User{}, entities.Customer{}, entities.CustomerAddress{})
 	g.ApplyInterface(func(queriers.Querier) {}, entities.Customer{})
 	// g.ApplyBasic(
 	// 	g.GenerateModel("users"),
