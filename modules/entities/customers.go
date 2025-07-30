@@ -29,9 +29,7 @@ type CustomersRepository interface {
 // Customer customers register request
 type Customer struct {
 	Model
-	Fname       string `json:"fname"`
-	Lname       string `json:"lname"`
-	Nickname    string `json:"nickname"`
+	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
 	Detail      string `json:"detail"`
 	Actor
@@ -39,9 +37,7 @@ type Customer struct {
 
 // CreateCustomerRequest create customer request
 type CreateCustomerRequest struct {
-	Fname       string `json:"fname"`
-	Lname       string `json:"lname"`
-	Nickname    string `json:"nickname"`
+	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
 	Detail      string `json:"detail"`
 }
@@ -64,8 +60,6 @@ type UpdateCustomerRequest struct {
 type GetAllCustomerRequest struct {
 	ID              *uint   `json:"id" query:"id"`
 	Name            *string `json:"name" query:"name"`
-	Surname         *string `json:"surname" query:"surname"`
-	Nickname        *string `json:"nickname" query:"nickname"`
 	TelephoneNumber *string `json:"telephone_number" query:"telephone_number"`
 	PhoneNumber     *string `json:"phone_number" query:"phone_number"`
 	Detail          *string `json:"detail" query:"detail"`

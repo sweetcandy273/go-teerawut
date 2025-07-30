@@ -73,12 +73,7 @@ func queryCustomer(db *gorm.DB, req *entities.GetAllCustomerRequest) *gorm.DB {
 	if req.Name != nil {
 		db = db.Where("name = ?", *req.Name)
 	}
-	if req.Surname != nil {
-		db = db.Where("surname = ?", *req.Surname)
-	}
-	if req.Nickname != nil {
-		db = db.Where("nickname = ?", *req.Nickname)
-	}
+
 	if req.TelephoneNumber != nil {
 		db = db.Where("telephone_number = ?", *req.TelephoneNumber)
 	}

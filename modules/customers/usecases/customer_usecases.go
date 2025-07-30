@@ -68,14 +68,8 @@ func (u *customersUse) Update(req *entities.UpdateCustomerRequest) error {
 }
 
 func updateCustomer(req *entities.UpdateCustomerRequest, customer *entities.Customer) {
-	if req.Fname != "" {
-		customer.Fname = req.Fname
-	}
-	if req.Lname != "" {
-		customer.Lname = req.Lname
-	}
-	if req.Nickname != "" {
-		customer.Nickname = req.Nickname
+	if req.Name != "" {
+		customer.Name = req.Name
 	}
 	if req.PhoneNumber != "" {
 		customer.PhoneNumber = req.PhoneNumber
