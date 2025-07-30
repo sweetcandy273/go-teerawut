@@ -1,7 +1,6 @@
 package context
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -142,7 +141,6 @@ func (c *Context) GetClaims() *Claims {
 
 // GetUserID get user ID from context
 func (c *Context) GetUserID() uint {
-	fmt.Printf("Locals: %#v\n", c.Locals(UserKey))
 	token, ok := c.Locals(UserKey).(*jwt.Token)
 	if !ok || token == nil {
 		return 0
