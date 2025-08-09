@@ -19,6 +19,7 @@ func ResponseObject(c *fiber.Ctx, fn interface{}, request interface{}) error {
 	}
 
 	out := reflect.ValueOf(fn).Call([]reflect.Value{
+		reflect.ValueOf(ctx),
 		reflect.ValueOf(request),
 	})
 	errObj := out[1].Interface()
@@ -31,7 +32,10 @@ func ResponseObject(c *fiber.Ctx, fn interface{}, request interface{}) error {
 
 // ResponseObjectWithoutRequest handle response object without request
 func ResponseObjectWithoutRequest(c *fiber.Ctx, fn interface{}) error {
-	out := reflect.ValueOf(fn).Call([]reflect.Value{})
+	ctx := context.New(c)
+	out := reflect.ValueOf(fn).Call([]reflect.Value{
+		reflect.ValueOf(ctx),
+	})
 	errObj := out[1].Interface()
 	if errObj != nil {
 		logrus.Errorf("call service error: %s", errObj)
@@ -63,7 +67,10 @@ func ResponseSuccess(c *fiber.Ctx, fn interface{}, request interface{}) error {
 
 // ResponseSuccessWithoutRequest handle response success without request
 func ResponseSuccessWithoutRequest(c *fiber.Ctx, fn interface{}) error {
-	out := reflect.ValueOf(fn).Call([]reflect.Value{})
+	ctx := context.New(c)
+	out := reflect.ValueOf(fn).Call([]reflect.Value{
+		reflect.ValueOf(ctx),
+	})
 	errObj := out[0].Interface()
 	if errObj != nil {
 		logrus.Errorf("call service error: %s", errObj)
@@ -82,6 +89,7 @@ func ResponseByte(c *fiber.Ctx, fn interface{}, request interface{}) error {
 	}
 
 	out := reflect.ValueOf(fn).Call([]reflect.Value{
+		reflect.ValueOf(ctx),
 		reflect.ValueOf(request),
 	})
 

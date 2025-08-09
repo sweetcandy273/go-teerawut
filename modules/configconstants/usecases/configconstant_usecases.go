@@ -31,3 +31,10 @@ func (u *configConstantUse) Create(c *context.Context, req *entities.CreateConfi
 
 	return nil
 }
+
+// GetAll get all
+func (u *configConstantUse) GetAll(c *context.Context, req *entities.GetConfigConstantRequest) ([]*entities.ConfigConstant, error) {
+	return u.ConfigConstantRepo.GetAll(&entities.GetConfigConstantRequest{
+		Group: req.Group,
+	})
+}

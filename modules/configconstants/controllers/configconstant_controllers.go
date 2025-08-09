@@ -16,12 +16,17 @@ func NewConfigConstantController(r fiber.Router, configConstantUse entities.Conf
 		ConfigConstantUse: configConstantUse,
 	}
 	r.Post("/", controllers.Create)
+	r.Get("/", controllers.GetAll)
 	// r.Patch("/:id", controllers.Update)
-	// r.Get("/", controllers.GetAll)
 	// r.Delete("/:id", controllers.Delete)
 }
 
 // Create create
 func (h *configConstantController) Create(c *fiber.Ctx) error {
 	return handlers.ResponseSuccess(c, h.ConfigConstantUse.Create, &entities.CreateConfigConstantRequest{})
+}
+
+// GetAll get all
+func (h *configConstantController) GetAll(c *fiber.Ctx) error {
+	return handlers.ResponseObject(c, h.ConfigConstantUse.GetAll, &entities.GetConfigConstantRequest{})
 }
