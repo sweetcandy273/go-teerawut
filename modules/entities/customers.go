@@ -11,10 +11,10 @@ import (
 type CustomersUsecase interface {
 	Create(c *context.Context, req *CreateCustomerRequest) error
 	Update(c *context.Context, req *UpdateCustomerRequest) error
-	GetAll(req *GetAllCustomerRequest) ([]*Customer, error)
+	GetAll(c *context.Context, req *GetAllCustomerRequest) ([]*Customer, error)
 	Delete(c *context.Context, req *GetOne) error
-	GetByID(req *GetOne) (*Customer, error)
-	GetByDetailAndTelephoneNumber(req *GetByDetailAndTelephoneNumberRequest) (any, error)
+	GetByID(c *context.Context, req *GetOne) (*Customer, error)
+	GetByDetailAndTelephoneNumber(c *context.Context, req *GetByDetailAndTelephoneNumberRequest) (any, error)
 }
 
 // CustomersRepository customers repository
@@ -28,24 +28,38 @@ type CustomersRepository interface {
 	CreateAddress(addresses []*CustomerAddress) error
 	UpdateAddress(addresses []*CustomerAddress) error
 	DeleteAddress(ids []uint) error
+	CreateAirConditions(airs []*CustomerAirCondition) error
+	UpdateAirConditions(airs []*CustomerAirCondition) error
+	DeleteAirConditions(ids []uint) error
 }
 
 // Customer customers register request
 type Customer struct {
 	Model
-	Name        string             `json:"name"`
-	PhoneNumber string             `json:"phone_number"`
-	Detail      string             `json:"detail"`
-	Addresses   []*CustomerAddress `json:"addresses" gorm:"foreignKey:CustomerID;references:ID"`
+	Name          string                  `json:"name"`
+	PhoneNumber   string                  `json:"phone_number"`
+	Detail        string                  `json:"detail"`
+	Addresses     []*CustomerAddress      `json:"addresses" gorm:"foreignKey:CustomerID;references:ID"`
+	AirConditions []*CustomerAirCondition `json:"air_conditions" gorm:"foreignKey:CustomerID;references:ID"`
 	Actor
 }
 
 // CreateCustomerRequest create customer request
 type CreateCustomerRequest struct {
-	Name        string    `json:"name"`
-	PhoneNumber string    `json:"phone_number"`
-	Detail      string    `json:"detail"`
-	Addresses   []address `json:"addresses"`
+	Name          string         `json:"name"`
+	PhoneNumber   string         `json:"phone_number"`
+	Detail        string         `json:"detail"`
+	Addresses     []address      `json:"addresses"`
+	AirConditions []airCondition `json:"air_conditions"`
+}
+
+type airCondition struct {
+	ID         uint   `json:"id"`
+	AirBrandID uint   `json:"air_brand_id"`
+	AirTypeID  uint   `json:"air_type_id"`
+	BtuID      uint   `json:"btu_id"`
+	RoomName   string `json:"room_name"`
+	FromUs     *bool  `json:"from_us"`
 }
 
 type address struct {

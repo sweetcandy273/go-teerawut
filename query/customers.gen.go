@@ -45,6 +45,12 @@ func newCustomer(db *gorm.DB, opts ...gen.DOOption) customer {
 		RelationField: field.NewRelation("Addresses", "entities.CustomerAddress"),
 	}
 
+	_customer.AirConditions = customerHasManyAirConditions{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("AirConditions", "entities.CustomerAirCondition"),
+	}
+
 	_customer.fillFieldMap()
 
 	return _customer
@@ -65,6 +71,8 @@ type customer struct {
 	UpdatedByUserID field.Uint
 	DeletedByUserID field.Uint
 	Addresses       customerHasManyAddresses
+
+	AirConditions customerHasManyAirConditions
 
 	fieldMap map[string]field.Expr
 }
@@ -107,7 +115,7 @@ func (c *customer) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *customer) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 11)
+	c.fieldMap = make(map[string]field.Expr, 12)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
@@ -125,12 +133,15 @@ func (c customer) clone(db *gorm.DB) customer {
 	c.customerDo.ReplaceConnPool(db.Statement.ConnPool)
 	c.Addresses.db = db.Session(&gorm.Session{Initialized: true})
 	c.Addresses.db.Statement.ConnPool = db.Statement.ConnPool
+	c.AirConditions.db = db.Session(&gorm.Session{Initialized: true})
+	c.AirConditions.db.Statement.ConnPool = db.Statement.ConnPool
 	return c
 }
 
 func (c customer) replaceDB(db *gorm.DB) customer {
 	c.customerDo.ReplaceDB(db)
 	c.Addresses.db = db.Session(&gorm.Session{})
+	c.AirConditions.db = db.Session(&gorm.Session{})
 	return c
 }
 
@@ -211,6 +222,87 @@ func (a customerHasManyAddressesTx) Count() int64 {
 }
 
 func (a customerHasManyAddressesTx) Unscoped() *customerHasManyAddressesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type customerHasManyAirConditions struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a customerHasManyAirConditions) Where(conds ...field.Expr) *customerHasManyAirConditions {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a customerHasManyAirConditions) WithContext(ctx context.Context) *customerHasManyAirConditions {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a customerHasManyAirConditions) Session(session *gorm.Session) *customerHasManyAirConditions {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a customerHasManyAirConditions) Model(m *entities.Customer) *customerHasManyAirConditionsTx {
+	return &customerHasManyAirConditionsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a customerHasManyAirConditions) Unscoped() *customerHasManyAirConditions {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type customerHasManyAirConditionsTx struct{ tx *gorm.Association }
+
+func (a customerHasManyAirConditionsTx) Find() (result []*entities.CustomerAirCondition, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a customerHasManyAirConditionsTx) Append(values ...*entities.CustomerAirCondition) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a customerHasManyAirConditionsTx) Replace(values ...*entities.CustomerAirCondition) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a customerHasManyAirConditionsTx) Delete(values ...*entities.CustomerAirCondition) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a customerHasManyAirConditionsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a customerHasManyAirConditionsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a customerHasManyAirConditionsTx) Unscoped() *customerHasManyAirConditionsTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

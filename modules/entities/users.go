@@ -1,14 +1,11 @@
 package entities
 
-const (
-	// UserIDAdmin user id admin
-	UserIDAdmin uint = 1
-)
+import "github.com/sweetcandy273/go-teerawut/pkg/handlers/context"
 
 // UsersUsecase users usecase
 type UsersUsecase interface {
-	Register(req *CreateUserRequest) (*User, error)
-	Login(req *LoginRequest) (*Token, error)
+	Register(c *context.Context, req *CreateUserRequest) (*User, error)
+	Login(c *context.Context, req *LoginRequest) (*Token, error)
 }
 
 // UsersRepository users repository

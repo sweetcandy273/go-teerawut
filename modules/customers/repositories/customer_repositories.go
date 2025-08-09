@@ -59,7 +59,10 @@ func (r *customersRepo) Update(c *entities.Customer) error {
 // GetAll get all
 func (r *customersRepo) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
 	var customers []*entities.Customer
-	err := queryCustomer(r.DB, req).Preload("Addresses").Find(&customers).Error
+	err := queryCustomer(r.DB, req).
+		Preload("Addresses").
+		Preload("AirConditions").
+		Find(&customers).Error
 	if err != nil {
 		logrus.Errorf("Query :: Get all customers error: %v", err)
 		return nil, err
@@ -148,6 +151,45 @@ func (r *customersRepo) DeleteAddress(ids []uint) error {
 	_, err := q.Where(q.ID.In(ids...)).Delete()
 	if err != nil {
 		logrus.Errorf("Delete customer address error: %v", err)
+		return err
+	}
+	return nil
+}
+
+// CreateAirConditions create air conditions
+func (r *customersRepo) CreateAirConditions(airs []*entities.CustomerAirCondition) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAirCondition
+	err := q.CreateInBatches(airs, 100)
+	if err != nil {
+		logrus.Errorf("Create customer air conditions error: %v", err)
+		return err
+	}
+	return nil
+}
+
+// UpdateAirConditions update air conditions
+func (r *customersRepo) UpdateAirConditions(airs []*entities.CustomerAirCondition) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAirCondition
+	err := q.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"air_condition_id", "btu_id", "room_name", "from_us"}),
+	}).CreateInBatches(airs, 100)
+	if err != nil {
+		logrus.Errorf("Update customer air conditions error: %v", err)
+		return err
+	}
+	return nil
+}
+
+// DeleteAirConditions delete air conditions
+func (r *customersRepo) DeleteAirConditions(ids []uint) error {
+	query.SetDefault(r.DB)
+	q := query.CustomerAirCondition
+	_, err := q.Where(q.ID.In(ids...)).Delete()
+	if err != nil {
+		logrus.Errorf("Delete customer air conditions error: %v", err)
 		return err
 	}
 	return nil

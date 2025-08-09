@@ -156,6 +156,107 @@ func (u *customersUse) Update(c *context.Context, req *entities.UpdateCustomerRe
 		}
 	}
 
+	// bulk update air conditions
+	if len(req.AirConditions) > 0 {
+		oldMap := make(map[uint]*entities.CustomerAirCondition)
+		for _, airCond := range customer.AirConditions {
+			oldMap[airCond.ID] = airCond
+		}
+		var newAirConditions []*entities.CustomerAirCondition
+		var updateAirConditions []*entities.CustomerAirCondition
+		newIDs := map[uint]bool{}
+		for _, airCond := range req.AirConditions {
+			if airCond.ID == 0 {
+				var airBrandID *uint
+				if airCond.AirBrandID == 0 {
+					airBrandID = nil
+				} else {
+					airBrandID = &airCond.AirBrandID
+				}
+				var airTypeID *uint
+				if airCond.AirTypeID == 0 {
+					airTypeID = nil
+				} else {
+					airTypeID = &airCond.AirTypeID
+				}
+				var btuID *uint
+				if airCond.BtuID == 0 {
+					btuID = nil
+				} else {
+					btuID = &airCond.BtuID
+				}
+				newAirConditions = append(newAirConditions,
+					&entities.CustomerAirCondition{
+						CustomerID: customer.ID,
+						AirBrandID: airBrandID,
+						AirTypeID:  airTypeID,
+						BtuID:      btuID,
+						RoomName:   airCond.RoomName,
+						FromUs:     airCond.FromUs,
+					})
+			} else {
+				if updateAirCond, exists := oldMap[airCond.ID]; exists {
+					var airBrandID *uint
+					if airCond.AirBrandID == 0 {
+						airBrandID = nil
+					} else {
+						airBrandID = &airCond.AirBrandID
+					}
+					var airTypeID *uint
+					if airCond.AirTypeID == 0 {
+						airTypeID = nil
+					} else {
+						airTypeID = &airCond.AirTypeID
+					}
+					var btuID *uint
+					if airCond.BtuID == 0 {
+						btuID = nil
+					} else {
+						btuID = &airCond.BtuID
+					}
+					updateAirConditions = append(updateAirConditions,
+						&entities.CustomerAirCondition{
+							Model:      updateAirCond.Model,
+							CustomerID: customer.ID,
+							AirBrandID: airBrandID,
+							AirTypeID:  airTypeID,
+							BtuID:      btuID,
+							RoomName:   airCond.RoomName,
+							FromUs:     airCond.FromUs,
+						})
+				}
+			}
+			newIDs[airCond.ID] = true
+		}
+		if len(newAirConditions) > 0 {
+			err = u.CustomersRepo.CreateAirConditions(newAirConditions)
+			if err != nil {
+				logrus.Errorf("Create new customer air conditions error: %v", err)
+				return err
+			}
+		}
+		if len(updateAirConditions) > 0 {
+			err = u.CustomersRepo.UpdateAirConditions(updateAirConditions)
+			if err != nil {
+				logrus.Errorf("Update customer air conditions error: %v", err)
+				return err
+			}
+		}
+		var deleteIDs []uint
+		for _, airCond := range customer.AirConditions {
+			if _, exists := newIDs[airCond.ID]; !exists {
+				deleteIDs = append(deleteIDs, airCond.ID)
+			}
+		}
+		if len(deleteIDs) > 0 {
+			err = u.CustomersRepo.DeleteAirConditions(deleteIDs)
+			if err != nil {
+				logrus.Errorf("Delete customer air conditions error: %v", err)
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -174,7 +275,7 @@ func updateCustomer(actorID uint, req *entities.UpdateCustomerRequest, customer 
 }
 
 // GetAll get all
-func (u *customersUse) GetAll(req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
+func (u *customersUse) GetAll(c *context.Context, req *entities.GetAllCustomerRequest) ([]*entities.Customer, error) {
 	customers, err := u.CustomersRepo.GetAll(req)
 	if err != nil {
 		logrus.Errorf("Get all customer error: %v", err)
@@ -211,7 +312,7 @@ func (u *customersUse) Delete(c *context.Context, req *entities.GetOne) error {
 }
 
 // GetByID get by id
-func (u *customersUse) GetByID(req *entities.GetOne) (*entities.Customer, error) {
+func (u *customersUse) GetByID(c *context.Context, req *entities.GetOne) (*entities.Customer, error) {
 	customer, err := u.CustomersRepo.GetByID(req.ID)
 	if err != nil {
 		logrus.Errorf("Get customer by id %d error: %v", req, err)
@@ -221,7 +322,7 @@ func (u *customersUse) GetByID(req *entities.GetOne) (*entities.Customer, error)
 }
 
 // GetByDetailAndTelephoneNumber get by detail and telephone number
-func (u *customersUse) GetByDetailAndTelephoneNumber(req *entities.GetByDetailAndTelephoneNumberRequest) (any, error) {
+func (u *customersUse) GetByDetailAndTelephoneNumber(c *context.Context, req *entities.GetByDetailAndTelephoneNumberRequest) (any, error) {
 	customer, err := u.CustomersRepo.FindByDetailAndTelephoneNumber(req.Detail, req.TelephoneNumber)
 	if err != nil {
 		logrus.Errorf("Get customer by detail %s and telephone number %s error: %v", req.Detail, req.TelephoneNumber, err)

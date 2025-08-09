@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/sweetcandy273/go-teerawut/modules/entities"
+	"github.com/sweetcandy273/go-teerawut/pkg/handlers/context"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func NewUsersUsecase(usersRepo entities.UsersRepository) entities.UsersUsecase {
 }
 
 // Register register
-func (u *usersUse) Register(req *entities.CreateUserRequest) (*entities.User, error) {
+func (u *usersUse) Register(c *context.Context, req *entities.CreateUserRequest) (*entities.User, error) {
 	// Check if user already exists
 	_, err := u.UsersRepo.FindByUsername(req.Username)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -50,7 +51,7 @@ func (u *usersUse) Register(req *entities.CreateUserRequest) (*entities.User, er
 }
 
 // Login login
-func (u *usersUse) Login(req *entities.LoginRequest) (*entities.Token, error) {
+func (u *usersUse) Login(c *context.Context, req *entities.LoginRequest) (*entities.Token, error) {
 	// Find user by username
 	user, err := u.UsersRepo.FindByUsername(req.Username)
 	if err != nil {
