@@ -15,6 +15,10 @@ import (
 	_customersRepository "github.com/sweetcandy273/go-teerawut/modules/customers/repositories"
 	_customersUsecase "github.com/sweetcandy273/go-teerawut/modules/customers/usecases"
 
+	_configConstantHttp "github.com/sweetcandy273/go-teerawut/modules/configconstants/controllers"
+	_configConstantRepository "github.com/sweetcandy273/go-teerawut/modules/configconstants/repositories"
+	_configConstantUsecase "github.com/sweetcandy273/go-teerawut/modules/configconstants/usecases"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -54,6 +58,12 @@ func (s *Server) MapHandlers() error {
 			"result":      nil,
 		})
 	})
+
+	//* Config constants group
+	configConstantGroup := v1.Group("/config_constants", authJWT)
+	configConstantRepository := _configConstantRepository.NewConfigConstantRepository(s.DB)
+	configConstantUsecase := _configConstantUsecase.NewConfigConstantUsecase(configConstantRepository)
+	_configConstantHttp.NewConfigConstantController(configConstantGroup, configConstantUsecase)
 
 	//* Users group
 	usersGroup := v1.Group("/users")

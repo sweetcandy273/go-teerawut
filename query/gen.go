@@ -17,6 +17,7 @@ import (
 
 var (
 	Q               = new(Query)
+	ConfigConstant  *configConstant
 	Customer        *customer
 	CustomerAddress *customerAddress
 	User            *user
@@ -24,6 +25,7 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	ConfigConstant = &Q.ConfigConstant
 	Customer = &Q.Customer
 	CustomerAddress = &Q.CustomerAddress
 	User = &Q.User
@@ -32,6 +34,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:              db,
+		ConfigConstant:  newConfigConstant(db, opts...),
 		Customer:        newCustomer(db, opts...),
 		CustomerAddress: newCustomerAddress(db, opts...),
 		User:            newUser(db, opts...),
@@ -41,6 +44,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	ConfigConstant  configConstant
 	Customer        customer
 	CustomerAddress customerAddress
 	User            user
@@ -51,6 +55,7 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:              db,
+		ConfigConstant:  q.ConfigConstant.clone(db),
 		Customer:        q.Customer.clone(db),
 		CustomerAddress: q.CustomerAddress.clone(db),
 		User:            q.User.clone(db),
@@ -68,6 +73,7 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:              db,
+		ConfigConstant:  q.ConfigConstant.replaceDB(db),
 		Customer:        q.Customer.replaceDB(db),
 		CustomerAddress: q.CustomerAddress.replaceDB(db),
 		User:            q.User.replaceDB(db),
@@ -75,6 +81,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	ConfigConstant  IConfigConstantDo
 	Customer        ICustomerDo
 	CustomerAddress ICustomerAddressDo
 	User            IUserDo
@@ -82,6 +89,7 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		ConfigConstant:  q.ConfigConstant.WithContext(ctx),
 		Customer:        q.Customer.WithContext(ctx),
 		CustomerAddress: q.CustomerAddress.WithContext(ctx),
 		User:            q.User.WithContext(ctx),
